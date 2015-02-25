@@ -58,18 +58,22 @@ class Mutex
   /**
    * Try to lock the mutex
    *
-   * @param int $timeout How long to wait in milliseconds.
-   *                     -1 means wait forever
-   *                     0 means don't wait at all
-   * @param int $expiry  How long in seconds to keep the mutex locked just in
-   *                     case the script dies. 0 = never expires.
+   * @param int $timeout  How long to wait in milliseconds.
+   *                      -1 means wait forever
+   *                      0 means don't wait at all
+   * @param int $expiry   How long in seconds to keep the mutex locked just in
+   *                      case the script dies. 0 = never expires.
+   * @param int $maxSleep Maximum time to sleep time in milliseconds
    *
    * @throws LockFailedException
    * @return $this
    */
-  public function tryLock($timeout = 0, $expiry = self::DEFAULT_EXPIRY)
+  public function waitLock(
+    $timeout, $expiry = self::DEFAULT_EXPIRY, $maxSleep = 1000
+  )
   {
     $start = microtime(true);
+    $uSleepTime = min(max(500, $timeout), $maxSleep) * 1000;
     while(!$this->isLocked())
     {
       try
@@ -83,7 +87,7 @@ class Mutex
         {
           throw $e;
         }
-        usleep(mt_rand(0, min(5000, $timeout)));
+        usleep($uSleepTime);
       }
     }
     return $this;

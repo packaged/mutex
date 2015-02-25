@@ -61,7 +61,7 @@ class MutexTest extends \PHPUnit_Framework_TestCase
     $provider2 = new MemcacheMutexProvider($memcache);
     $timeoutMutex1 = Mutex::create($provider, 'TimeoutLock')->lock(2);
     $this->assertTrue($timeoutMutex1->isLocked());
-    $timeoutMutex2 = Mutex::create($provider2, 'TimeoutLock')->tryLock(3000);
+    $timeoutMutex2 = Mutex::create($provider2, 'TimeoutLock')->waitLock(3000);
     $this->assertFalse($timeoutMutex1->isLocked());
     $this->assertTrue($timeoutMutex2->isLocked());
 
@@ -69,7 +69,7 @@ class MutexTest extends \PHPUnit_Framework_TestCase
       'Packaged\Mutex\Exceptions\LockFailedException',
       'Failed to lock'
     );
-    $timeoutMutex1->tryLock(1000);
+    $timeoutMutex1->waitLock(1000);
   }
 
   public function testMemcacheLocked()
