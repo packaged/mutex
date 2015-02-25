@@ -10,5 +10,6 @@ php:
   - hhvm
 
 before_script:
+  - pecl install memcache
   - composer self-update
   - composer install --no-interaction --prefer-source
