@@ -13,6 +13,7 @@ class Mutex
   const DEFAULT_EXPIRY = 15;
 
   private $_mutexKey;
+  private $_unlockOnDestruct;
 
   /**
    * @param IMutexProvider $provider  Cache Pool to store locks
@@ -22,6 +23,7 @@ class Mutex
   {
     $this->_provider = $provider;
     $this->_mutexKey = 'PACKAGED_MUTEX:' . $mutexName;
+    $this->_unlockOnDestruct = true;
   }
 
   public static function create(IMutexProvider $provider, $mutexName)
@@ -32,7 +34,15 @@ class Mutex
 
   public function __destruct()
   {
-    $this->unlock();
+    if($this->_unlockOnDestruct)
+    {
+      $this->unlock();
+    }
+  }
+
+  public function setUnlockOnDestruct($unlock)
+  {
+    $this->_unlockOnDestruct = $unlock;
   }
 
   public function isLocked()
