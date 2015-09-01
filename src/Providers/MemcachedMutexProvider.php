@@ -67,4 +67,9 @@ class MemcachedMutexProvider extends AbstractMutexProvider
   {
     $this->_memcache->set($mutexKey, $this->_getLockId(), $expiry);
   }
+
+  public function lockedBy($mutexKey)
+  {
+    return $this->_memcache->get($mutexKey) ?: null;
+  }
 }

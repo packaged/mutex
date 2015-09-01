@@ -72,4 +72,10 @@ class MockMutexProvider extends AbstractMutexProvider
   {
     unset(self::$_locks[$id]);
   }
+
+  public function lockedBy($mutexKey)
+  {
+    return isset(self::$_locks[$mutexKey]) ? self::$_locks[$mutexKey] : null;
+  }
+
 }

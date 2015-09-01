@@ -37,4 +37,13 @@ interface IMutexProvider
    * @param int    $expiry How long in the future to set the new expiry
    */
   public function touch($mutexKey, $expiry);
+
+  /**
+   * Find out the ID of the process locking the mutex
+   *
+   * @param string $mutexKey The mutex to check
+   *
+   * @return string|null The name of the locking process or null if not locked
+   */
+  public function lockedBy($mutexKey);
 }

@@ -130,4 +130,14 @@ class Mutex
       $this->_provider->touch($this->_mutexKey, $expiry);
     }
   }
+
+  /**
+   * Get the ID of the process currently locking the Mutex
+   *
+   * @return string|null The process ID or null if it is not locked
+   */
+  public function lockedBy()
+  {
+    return $this->_provider->lockedBy($this->_mutexKey);
+  }
 }
