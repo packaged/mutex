@@ -138,4 +138,20 @@ class MutexTest extends \PHPUnit_Framework_TestCase
     $this->assertTrue($mutex1->isLocked());
     $this->assertFalse($mutex2->isLocked());
   }
+
+  public function testMemcachedTryLock()
+  {
+    $memcache = new \Memcached();
+    $memcache->addServer('127.0.0.1', 11211);
+    $provider1 = new MemcachedMutexProvider($memcache);
+    $provider2 = new MemcachedMutexProvider($memcache);
+    $mutex1 = Mutex::create($provider1, 'dCacheLock');
+    $mutex2 = Mutex::create($provider2, 'dCacheLock');
+
+    $this->assertTrue($mutex1->tryLock());
+    $this->assertFalse($mutex2->tryLock());
+
+    $this->assertTrue($mutex1->isLocked());
+    $this->assertFalse($mutex2->isLocked());
+  }
 }

@@ -66,6 +66,27 @@ class Mutex
   }
 
   /**
+   * Try to lock the mutex without throwing an exception
+   *
+   * @param int    $expiry How long in seconds to keep the mutex locked just in
+   *                       case the script dies. 0 = never expires.
+   *
+   * @return bool true if the mutex was locked successfully, false if locking failed
+   */
+  public function tryLock($expiry = self::DEFAULT_EXPIRY)
+  {
+    try
+    {
+      $this->lock($expiry);
+      return true;
+    }
+    catch(LockFailedException $e)
+    {
+      return false;
+    }
+  }
+
+  /**
    * Try to lock the mutex
    *
    * @param int $timeout  How long to wait in milliseconds.
