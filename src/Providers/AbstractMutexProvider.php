@@ -1,7 +1,6 @@
 <?php
 namespace Packaged\Mutex\Providers;
 
-use Packaged\Mutex\Exceptions\LockFailedException;
 use Packaged\Mutex\Interfaces\IMutexProvider;
 
 abstract class AbstractMutexProvider implements IMutexProvider
