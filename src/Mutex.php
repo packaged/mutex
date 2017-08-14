@@ -12,18 +12,40 @@ class Mutex
    */
   const DEFAULT_EXPIRY = 15;
 
+  private $_provider;
   private $_mutexKey;
   private $_unlockOnDestruct;
 
   /**
    * @param IMutexProvider $provider  Cache Pool to store locks
    * @param string         $mutexName The name of the mutex
+   *
+   * @throws \Exception
    */
   public function __construct(IMutexProvider $provider, $mutexName)
   {
+    if(!$this->isValidKey($mutexName))
+    {
+      throw new \Exception('Invalid mutex key');
+    }
+
     $this->_provider = $provider;
     $this->_mutexKey = 'PACKAGED_MUTEX:' . $mutexName;
     $this->_unlockOnDestruct = true;
+  }
+
+  /**
+   * @param mixed $key
+   *
+   * @return bool
+   *
+   * Keys can be up to 250 chars but this package appends an extra string
+   */
+  public function isValidKey($key)
+  {
+    return ($key || $key === 0 || $key === "0")
+      && (strlen($key) <= 200)
+      && (!preg_match('/\s/', $key));
   }
 
   public static function create(IMutexProvider $provider, $mutexName)
@@ -45,6 +67,9 @@ class Mutex
     $this->_unlockOnDestruct = $unlock;
   }
 
+  /**
+   * @return bool
+   */
   public function isLocked()
   {
     return $this->_provider->isLocked($this->_mutexKey);
@@ -126,6 +151,7 @@ class Mutex
 
   /**
    * Unlock the mutex if it is locked
+   *
    * @return $this
    */
   public function unlock()

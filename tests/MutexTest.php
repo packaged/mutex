@@ -154,4 +154,58 @@ class MutexTest extends \PHPUnit_Framework_TestCase
     $this->assertTrue($mutex1->isLocked());
     $this->assertFalse($mutex2->isLocked());
   }
+
+  public function testKeyValidationPass()
+  {
+    $provider = new MockMutexProvider();
+    new Mutex($provider, str_repeat("x", 200));
+
+    $provider = new MockMutexProvider();
+    new Mutex($provider, 0);
+
+    $provider = new MockMutexProvider();
+    new Mutex($provider, '0');
+  }
+
+  /** @expectedException \Exception */
+  public function testKeyValidationNullException()
+  {
+    $provider = new MockMutexProvider();
+    new Mutex($provider, null);
+  }
+
+  /** @expectedException \Exception */
+  public function testKeyValidationSpaceException()
+  {
+    $provider = new MockMutexProvider();
+    new Mutex($provider, 'xxx xxx');
+  }
+
+  /** @expectedException \Exception */
+  public function testKeyValidationTabException()
+  {
+    $provider = new MockMutexProvider();
+    new Mutex($provider, "xxx\txxx");
+  }
+
+  /** @expectedException \Exception */
+  public function testKeyValidationNewLineException()
+  {
+    $provider = new MockMutexProvider();
+    new Mutex($provider, "xxx\nxxx");
+  }
+
+  /** @expectedException \Exception */
+  public function testKeyValidationCarriageReturnException()
+  {
+    $provider = new MockMutexProvider();
+    new Mutex($provider, "xxx\rxxx");
+  }
+
+  /** @expectedException \Exception */
+  public function testKeyValidationLongException()
+  {
+    $provider = new MockMutexProvider();
+    new Mutex($provider, str_repeat("x", 201));
+  }
 }
