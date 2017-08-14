@@ -38,13 +38,15 @@ class Mutex
    * @param mixed $key
    *
    * @return bool
+   *
+   * Keys can be up to 250 chars but this package appends an extra string
    */
   public function isValidKey($key)
   {
-    return !(
-      (!$key && $key !== 0 && $key !== "0")
-      || (strlen($key) > 250)
-      || (preg_match('/\s/', $key))
+    return (
+      ($key || $key === 0 || $key === "0")
+      && (strlen($key) <= 200)
+      && (!preg_match('/\s/', $key))
     );
   }
 
