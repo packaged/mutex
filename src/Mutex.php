@@ -12,9 +12,9 @@ class Mutex
    */
   const DEFAULT_EXPIRY = 15;
 
+  private $_provider;
   private $_mutexKey;
   private $_unlockOnDestruct;
-  private $_provider;
 
   /**
    * @param IMutexProvider $provider  Cache Pool to store locks
@@ -43,11 +43,9 @@ class Mutex
    */
   public function isValidKey($key)
   {
-    return (
-      ($key || $key === 0 || $key === "0")
+    return ($key || $key === 0 || $key === "0")
       && (strlen($key) <= 200)
-      && (!preg_match('/\s/', $key))
-    );
+      && (!preg_match('/\s/', $key));
   }
 
   public static function create(IMutexProvider $provider, $mutexName)
@@ -153,6 +151,7 @@ class Mutex
 
   /**
    * Unlock the mutex if it is locked
+   *
    * @return $this
    */
   public function unlock()
