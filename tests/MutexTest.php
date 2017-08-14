@@ -159,6 +159,12 @@ class MutexTest extends \PHPUnit_Framework_TestCase
   {
     $provider = new MockMutexProvider();
     new Mutex($provider, str_repeat("x", 200));
+
+    $provider = new MockMutexProvider();
+    new Mutex($provider, 0);
+
+    $provider = new MockMutexProvider();
+    new Mutex($provider, '0');
   }
 
   /** @expectedException \Exception */
@@ -173,6 +179,27 @@ class MutexTest extends \PHPUnit_Framework_TestCase
   {
     $provider = new MockMutexProvider();
     new Mutex($provider, 'xxx xxx');
+  }
+
+  /** @expectedException \Exception */
+  public function testKeyValidationTabException()
+  {
+    $provider = new MockMutexProvider();
+    new Mutex($provider, "xxx\txxx");
+  }
+
+  /** @expectedException \Exception */
+  public function testKeyValidationNewLineException()
+  {
+    $provider = new MockMutexProvider();
+    new Mutex($provider, "xxx\nxxx");
+  }
+
+  /** @expectedException \Exception */
+  public function testKeyValidationCarriageReturnException()
+  {
+    $provider = new MockMutexProvider();
+    new Mutex($provider, "xxx\rxxx");
   }
 
   /** @expectedException \Exception */
