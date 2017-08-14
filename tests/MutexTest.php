@@ -154,4 +154,31 @@ class MutexTest extends \PHPUnit_Framework_TestCase
     $this->assertTrue($mutex1->isLocked());
     $this->assertFalse($mutex2->isLocked());
   }
+
+  public function testKeyValidationPass()
+  {
+    $provider = new MockMutexProvider();
+    new Mutex($provider, str_repeat("x", 200));
+  }
+
+  /** @expectedException \Exception */
+  public function testKeyValidationNullException()
+  {
+    $provider = new MockMutexProvider();
+    new Mutex($provider, null);
+  }
+
+  /** @expectedException \Exception */
+  public function testKeyValidationSpaceException()
+  {
+    $provider = new MockMutexProvider();
+    new Mutex($provider, 'xxx xxx');
+  }
+
+  /** @expectedException \Exception */
+  public function testKeyValidationLongException()
+  {
+    $provider = new MockMutexProvider();
+    new Mutex($provider, str_repeat("x", 201));
+  }
 }
