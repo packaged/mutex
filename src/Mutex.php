@@ -205,7 +205,8 @@ class Mutex
    * @return mixed
    * @throws \Exception
    */
-  public static function with(IMutexProvider $provider, $mutexName, callable $callable, $lockTime = self::DEFAULT_EXPIRY
+  public static function execute(
+    IMutexProvider $provider, $mutexName, callable $callable, $lockTime = self::DEFAULT_EXPIRY
   )
   {
     $mutex = new static($provider, $mutexName);

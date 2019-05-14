@@ -219,9 +219,8 @@ class MutexTest extends \PHPUnit_Framework_TestCase
   public function testWithMutex()
   {
     $provider = new MockMutexProvider();
-    $result = Mutex::with($provider, 'withlock', function (Mutex $mutext) { return $mutext->isLocked(); });
+    $result = Mutex::execute($provider, 'withlock', function (Mutex $mutext) { return $mutext->isLocked(); });
     $this->assertTrue($result);
-
     $this->assertFalse(Mutex::create($provider, 'withlock')->isLocked());
   }
 }
