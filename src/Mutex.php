@@ -30,8 +30,13 @@ class Mutex
     }
 
     $this->_provider = $provider;
-    $this->_mutexKey = 'PACKAGED_MUTEX:' . $mutexName;
+    $this->_mutexKey = static::createKey($mutexName);
     $this->_unlockOnDestruct = true;
+  }
+
+  public static function createKey($mutexName)
+  {
+    return 'PACKAGED_MUTEX:' . $mutexName;
   }
 
   /**
@@ -81,8 +86,8 @@ class Mutex
    * @param int $expiry  How long in seconds to keep the mutex locked just in
    *                     case the script dies. 0 = never expires.
    *
-   * @throws LockFailedException
    * @return $this
+   * @throws LockFailedException
    */
   public function lock($expiry = self::DEFAULT_EXPIRY)
   {
@@ -93,7 +98,7 @@ class Mutex
   /**
    * Try to lock the mutex without throwing an exception
    *
-   * @param int    $expiry How long in seconds to keep the mutex locked just in
+   * @param int $expiry    How long in seconds to keep the mutex locked just in
    *                       case the script dies. 0 = never expires.
    *
    * @return bool true if the mutex was locked successfully, false if locking failed
@@ -121,8 +126,8 @@ class Mutex
    *                      case the script dies. 0 = never expires.
    * @param int $maxSleep Maximum time to sleep time in milliseconds
    *
-   * @throws LockFailedException
    * @return $this
+   * @throws LockFailedException
    */
   public function waitLock(
     $timeout, $expiry = self::DEFAULT_EXPIRY, $maxSleep = 1000
@@ -186,5 +191,32 @@ class Mutex
   public function lockedBy()
   {
     return $this->_provider->lockedBy($this->_mutexKey);
+  }
+
+  /**
+   * Call a callable with locking
+   *
+   * @param IMutexProvider $provider
+   * @param                $mutexName
+   * @param callable       $callable
+   *
+   * @param int            $lockTime
+   *
+   * @return mixed
+   * @throws \Exception
+   */
+  public static function with(IMutexProvider $provider, $mutexName, callable $callable, $lockTime = self::DEFAULT_EXPIRY
+  )
+  {
+    $mutex = new static($provider, $mutexName);
+    $mutex->lock($lockTime);
+    try
+    {
+      return $callable($mutex);
+    }
+    finally
+    {
+      $mutex->unlock();
+    }
   }
 }

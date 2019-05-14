@@ -41,6 +41,9 @@ class MutexTest extends \PHPUnit_Framework_TestCase
     $this->assertFalse($mutex2->isLocked());
   }
 
+  /**
+   * @requires extension memcache
+   */
   public function testMemcache()
   {
     $memcache = new \Memcache();
@@ -73,6 +76,9 @@ class MutexTest extends \PHPUnit_Framework_TestCase
     $timeoutMutex1->waitLock(1000);
   }
 
+  /**
+   * @requires extension memcache
+   */
   public function testMemcacheLocked()
   {
     $this->setExpectedException(
@@ -207,5 +213,15 @@ class MutexTest extends \PHPUnit_Framework_TestCase
   {
     $provider = new MockMutexProvider();
     new Mutex($provider, str_repeat("x", 201));
+  }
+
+  /** @throws \Exception */
+  public function testWithMutex()
+  {
+    $provider = new MockMutexProvider();
+    $result = Mutex::with($provider, 'withlock', function (Mutex $mutext) { return $mutext->isLocked(); });
+    $this->assertTrue($result);
+
+    $this->assertFalse(Mutex::create($provider, 'withlock')->isLocked());
   }
 }
