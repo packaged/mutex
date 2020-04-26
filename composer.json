@@ -17,7 +17,11 @@
   },
   "autoload": {
     "psr-4": {
-      "Packaged\\Mutex\\": "src/",
+      "Packaged\\Mutex\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
       "Packaged\\Mutex\\Tests\\": "tests/"
     }
   }
