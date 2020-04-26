@@ -6,7 +6,7 @@ use Exception;
 class LockFailedException extends \Exception
 {
   public function __construct(
-    $message = "", $code = 0, Exception $previous = null
+    $message = "", $code = 423, Exception $previous = null
   )
   {
     if(empty($message))
