@@ -55,8 +55,7 @@ class Mutex
 
   public static function create(IMutexProvider $provider, $mutexName)
   {
-    $object = new static($provider, $mutexName);
-    return $object;
+    return new static($provider, $mutexName);
   }
 
   public function __destruct()
@@ -67,9 +66,16 @@ class Mutex
     }
   }
 
+  public function setLockId($lockId)
+  {
+    $this->_provider->setLockId($lockId);
+    return $this;
+  }
+
   public function setUnlockOnDestruct($unlock)
   {
     $this->_unlockOnDestruct = $unlock;
+    return $this;
   }
 
   /**
@@ -177,10 +183,8 @@ class Mutex
    */
   public function touch($expiry = self::DEFAULT_EXPIRY)
   {
-    if($this->isLocked())
-    {
-      $this->_provider->touch($this->_mutexKey, $expiry);
-    }
+    $this->_provider->touch($this->_mutexKey, $expiry);
+    return $this;
   }
 
   /**
