@@ -15,4 +15,10 @@ abstract class AbstractMutexProvider implements IMutexProvider
     }
     return $this->_id;
   }
+
+  public function setLockId($lockId)
+  {
+    $this->_id = $lockId;
+    return $this;
+  }
 }

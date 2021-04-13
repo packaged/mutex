@@ -1,6 +1,7 @@
 <?php
 namespace Packaged\Mutex\Tests;
 
+use Packaged\Mutex\Exceptions\LockFailedException;
 use Packaged\Mutex\Mutex;
 use Packaged\Mutex\Providers\MemcachedMutexProvider;
 use Packaged\Mutex\Providers\MemcacheMutexProvider;
@@ -222,5 +223,22 @@ class MutexTest extends \PHPUnit_Framework_TestCase
     $result = Mutex::execute($provider, 'withlock', function (Mutex $mutext) { return $mutext->isLocked(); });
     $this->assertTrue($result);
     $this->assertFalse(Mutex::create($provider, 'withlock')->isLocked());
+  }
+
+  public function testSetId()
+  {
+    $id = 'custom_lock_id';
+    $id2 = 'custom_lock_id2';
+    $key = 'test_key';
+
+    $provider = new MockMutexProvider();
+    $provider->setLockId($id);
+    $provider->lock($key, 10);
+    $this->assertTrue($provider->isLocked($key));
+    $this->assertEquals($id, $provider->lockedBy($key));
+
+    $provider->setLockId($id2);
+    $this->setExpectedException(LockFailedException::class);
+    $provider->lock($key, 10);
   }
 }
