@@ -15,15 +15,6 @@ class MemcachedMutexProvider extends AbstractMutexProvider
     $this->_memcache = $cachePool;
   }
 
-  /**
-   * Lock the mutex
-   *
-   * @param string $mutexKey Identifier of the mutex.
-   * @param int    $expiry   How long in seconds to keep the mutex locked just in
-   *                         case the script dies. 0 = never expires.
-   *
-   * @throws LockFailedException
-   */
   public function lock($mutexKey, $expiry)
   {
     // Try and set the value. If it fails check to see if
@@ -35,37 +26,30 @@ class MemcachedMutexProvider extends AbstractMutexProvider
         throw new LockFailedException();
       }
     }
+    return $this;
   }
 
-  /**
-   * Unlock the mutex if it is locked
-   *
-   * @param string $mutexKey Identifier of the mutex.
-   */
   public function unlock($mutexKey)
   {
-    $this->_memcache->delete($mutexKey);
+    if($this->isLocked($mutexKey))
+    {
+      $this->_memcache->delete($mutexKey);
+    }
+    return $this;
   }
 
-  /**
-   * @param string $mutexKey Identifier of the mutex.
-   *
-   * @return bool
-   */
   public function isLocked($mutexKey)
   {
     return ($this->_memcache->get($mutexKey) == $this->_getLockId());
   }
 
-  /**
-   * Touch the mutex to reset its expiry if we have it locked.
-   *
-   * @param string $mutexKey Identifier of the mutex.
-   * @param int    $expiry   How long in the future to set the new expiry
-   */
   public function touch($mutexKey, $expiry)
   {
-    $this->_memcache->set($mutexKey, $this->_getLockId(), $expiry);
+    if($this->isLocked($mutexKey))
+    {
+      $this->_memcache->set($mutexKey, $this->_getLockId(), $expiry);
+    }
+    return $this;
   }
 
   public function lockedBy($mutexKey)
